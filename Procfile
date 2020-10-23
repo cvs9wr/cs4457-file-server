@@ -1,1 +1,1 @@
-worker: python jewel.py 12345 files
+web: python jewel.py 12345 files
