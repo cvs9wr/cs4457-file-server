@@ -8,7 +8,15 @@ class FileReader:
         '''
         Returns a binary string of the file contents, or None.
         '''
+        print("filepath: "+str(filepath))
+        
         try: 
+            if filepath == b'files/':
+                return (b'HTTP/1.1 200 OK\n'
+            +b'Content-Type: text/html\n'
+            +b'Content-Length: 50\n'
+            +b'Server: cvs9wr\n'
+            +b'\n'+b'<html><body><h1>Welcome to my site :)</h1></body> </html>')
             #print("in-function: "+str(filepath)[2:-1])
             path = str(filepath)[2:-1]
             if '.' not in path and not path.endswith('/'):
@@ -17,7 +25,7 @@ class FileReader:
             +b'Content-Length: 50\n'
             +b'Server: cvs9wr\n'
             +b'\n'+b'<html><body><h1>file not found</h1></body> </html>')
-
+            
             if os.path.isdir(path):
                 return (b'HTTP/1.1 200 OK\n'
                     +b'Content-Type: text/html\n'
@@ -36,6 +44,7 @@ class FileReader:
         #print("in-function: "+str(cookies))
         
         file_data = requested_file.read()
+        requested_file.close()
         request = b''
         if path.endswith('.png'):
             request = (b'HTTP/1.1 200 OK\n'
@@ -88,7 +97,8 @@ class FileReader:
             #print("in-function: "+str(filepath)[2:-1])
             path = str(filepath)[2:-1]
             requested_file = open(path, 'rb')
+            val = str.encode(str(os.path.getsize(path)))
+            requested_file.close()
         except: 
             return None
-        
-        return str.encode(str(os.path.getsize(path)))
+        return val
