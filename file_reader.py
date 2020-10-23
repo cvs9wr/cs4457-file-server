@@ -15,12 +15,14 @@ class FileReader:
                 return (b'HTTP/1.1 404 Not Found\n'
             +b'Content-Type: text/html\n'
             +b'Content-Length: 50\n'
+            +b'Server: cvs9wr\n'
             +b'\n'+b'<html><body><h1>file not found</h1></body> </html>')
 
             if os.path.isdir(path):
                 return (b'HTTP/1.1 200 OK\n'
                     +b'Content-Type: text/html\n'
                     +b'Content-Length: 50\n'
+                    +b'Server: cvs9wr\n'
                     +b'\n'+b'<html><body><h1>'+path.encode()+b'</h1></body> </html>')
             
             requested_file = open(path, 'rb')
@@ -28,6 +30,7 @@ class FileReader:
             return (b'HTTP/1.1 404 Not Found\n'
             +b'Content-Type: text/html\n'
             +b'Content-Length: 50\n'
+            +b'Server: cvs9wr\n'
             +b'\n'+b'<html><body><h1>file not found</h1></body> </html>')
         
         #print("in-function: "+str(cookies))
@@ -39,35 +42,41 @@ class FileReader:
             +b'Content-Type: image/png\n'
             +b'Content-Disposition: inline\n'
             +b'Content-Length: '+str.encode(str(os.path.getsize(path)))+b'\n'
+            +b'Server: cvs9wr\n'
             +b'\n'+file_data)
         elif path.endswith('.jpg'):
             request = (b'HTTP/1.1 200 OK\n'
             +b'Content-Type: image/jpeg\n'
             +b'Content-Disposition: inline\n'
             +b'Content-Length: '+str.encode(str(os.path.getsize(path)))+b'\n'
+            +b'Server: cvs9wr\n'
             +b'\n'+file_data)
         elif path.endswith('.gif'):
             request = (b'HTTP/1.1 200 OK\n'
             +b'Content-Type: image/gif\n'
             +b'Content-Disposition: inline\n'
             +b'Content-Length: '+str.encode(str(os.path.getsize(path)))+b'\n'
+            +b'Server: cvs9wr\n'
             +b'\n'+file_data)
         elif path.endswith('.html'):
             request = (b'HTTP/1.1 200 OK\n'
             +b'Content-Type: text/html\n'
             +b'Content-Disposition: inline\n'
             +b'Content-Length: '+str.encode(str(os.path.getsize(path)))+b'\n'
+            +b'Server: cvs9wr\n'
             +b'\n'+file_data)
         elif path.endswith('.css'):
             request = (b'HTTP/1.1 200 OK\n'
             +b'Content-Type: text/css\n'
             +b'Content-Disposition: inline\n'
             +b'Content-Length: '+str.encode(str(os.path.getsize(path)))+b'\n'
+            +b'Server: cvs9wr\n'
             +b'\n'+file_data)
         else:
             request = (b'HTTP/1.1 404 Not Found\n'
             +b'Content-Type: text/html\n'
             +b'Content-Length: 50\n'
+            +b'Server: cvs9wr\n'
             +b'\n'+b'<html><body><h1>file not found</h1></body> </html>')
         return request
 
