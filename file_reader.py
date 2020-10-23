@@ -81,6 +81,13 @@ class FileReader:
             +b'Content-Length: '+str.encode(str(os.path.getsize(path)))+b'\n'
             +b'Server: cvs9wr\n'
             +b'\n'+file_data)
+        elif path.endswith('.txt'):
+            request = (b'HTTP/1.1 200 OK\n'
+            +b'Content-Type: text/plain\n'
+            +b'Content-Disposition: inline\n'
+            +b'Content-Length: '+str.encode(str(os.path.getsize(path)))+b'\n'
+            +b'Server: cvs9wr\n'
+            +b'\n'+file_data)
         else:
             request = (b'HTTP/1.1 404 Not Found\n'
             +b'Content-Type: text/html\n'
