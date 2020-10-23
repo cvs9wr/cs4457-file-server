@@ -44,56 +44,56 @@ class FileReader:
         #print("in-function: "+str(cookies))
         
         file_data = requested_file.read()
+        print("data-size"+str(len(file_data)))
         requested_file.close()
         request = b''
         if path.endswith('.png'):
-            request = (b'HTTP/1.1 200 OK\n'
-            +b'Content-Type: image/png\n'
-            +b'Content-Disposition: inline\n'
-            +b'Content-Length: '+str.encode(str(os.path.getsize(path)))+b'\n'
-            +b'Server: cvs9wr\n'
-            +b'\n'+file_data)
+            request = (b'HTTP/1.1 200 OK\r\n'
+            +b'Content-Length: '+str.encode(str(os.path.getsize(path)))+b'\r\n'
+            +b'Content-Type: image/png\r\n'
+            +b'Server: cvs9wr\r\n'
+            +b'\r\n'+file_data)
         elif path.endswith('.jpg'):
             request = (b'HTTP/1.1 200 OK\n'
             +b'Content-Type: image/jpeg\n'
-            +b'Content-Disposition: inline\n'
             +b'Content-Length: '+str.encode(str(os.path.getsize(path)))+b'\n'
             +b'Server: cvs9wr\n'
-            +b'\n'+file_data)
+            +b'Connection: close\n'
+            +b'\n'+file_data+b'\r\n\n')
         elif path.endswith('.gif'):
             request = (b'HTTP/1.1 200 OK\n'
             +b'Content-Type: image/gif\n'
-            +b'Content-Disposition: inline\n'
             +b'Content-Length: '+str.encode(str(os.path.getsize(path)))+b'\n'
             +b'Server: cvs9wr\n'
-            +b'\n'+file_data)
+            +b'Connection: close\n'
+            +b'\n'+file_data+b'\r\n\n')
         elif path.endswith('.html'):
             request = (b'HTTP/1.1 200 OK\n'
             +b'Content-Type: text/html\n'
-            +b'Content-Disposition: inline\n'
             +b'Content-Length: '+str.encode(str(os.path.getsize(path)))+b'\n'
             +b'Server: cvs9wr\n'
-            +b'\n'+file_data)
+            +b'Connection: close\n'
+            +b'\n'+file_data+b'\r\n\n')
         elif path.endswith('.css'):
             request = (b'HTTP/1.1 200 OK\n'
             +b'Content-Type: text/css\n'
-            +b'Content-Disposition: inline\n'
             +b'Content-Length: '+str.encode(str(os.path.getsize(path)))+b'\n'
             +b'Server: cvs9wr\n'
-            +b'\n'+file_data)
+            +b'Connection: close\n'
+            +b'\n'+file_data+b'\r\n\n')
         elif path.endswith('.txt'):
             request = (b'HTTP/1.1 200 OK\n'
             +b'Content-Type: text/plain\n'
-            +b'Content-Disposition: inline\n'
             +b'Content-Length: '+str.encode(str(os.path.getsize(path)))+b'\n'
             +b'Server: cvs9wr\n'
-            +b'\n'+file_data)
+            +b'\n'+file_data+b'\r\n\n')
         else:
             request = (b'HTTP/1.1 404 Not Found\n'
             +b'Content-Type: text/html\n'
             +b'Content-Length: 50\n'
             +b'Server: cvs9wr\n'
-            +b'\n'+b'<html><body><h1>file not found</h1></body> </html>')
+            +b'Connection: close\n'
+            +b'\n'+b'<html><body><h1>file not found</h1></body> </html>'+b'\r\n')
         return request
 
     def head(self, filepath, cookies):

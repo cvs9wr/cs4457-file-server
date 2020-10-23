@@ -13,31 +13,31 @@ class Jewel:
         self.file_path = file_path
         self.file_reader = file_reader
         file_data = FileReader()
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.setblocking(0)
-        s.bind(('0.0.0.0', port))
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.setblocking(False)
+        server.bind(('0.0.0.0', port))
 
         print('Server started on port '+str(port))
 
-        s.listen(5)
+        server.listen(5)
 
-        inputs = [ s ]
+        inputs = [ server ]
 
         outputs = [ ]
 
         message_queue = {}
         #print("[CONN] Connection from "+str(address)+"on port "+str(port))
-        while True:
+        while inputs:
             readable, writable, exceptional = select.select(inputs, outputs, inputs)
-            for x in readable:
-                if x is s:
+            for s in readable:
+                if s is server:
                     client, address = s.accept()
                     print("[CONN] Connection from "+str(address)+"on port "+str(port))
-                    client.setblocking(0)
+                    client.setblocking(1)
                     inputs.append(client)
                     message_queue[client] = queue.Queue()
                 else:
-                    data = x.recv(1024)
+                    data = s.recv(1024)
                     if data:
                         potential_cmd = b''
                         potential_filepath = b''
@@ -60,40 +60,46 @@ class Jewel:
                                 print("[REQU] ["+str(address)+":"+str(port)+"] GET request for "+str(potential_filepath))
                                 #print(file_data.get(b''+potential_filepath, 'idk'))
                                 client_message = file_data.get(b''+file_path.encode()+potential_filepath, 'idk')
-                                #print(client_message)
-                                message_queue[x].put(client_message)
+                                print("CM: "+str(len(client_message)))
+                                message_queue[s].put(client_message)
                                 if b'404 Not Found' in client_message:
                                     print(print("[ERRO] ["+str(address)+":"+str(port)+"] "+str(data)+" request returned error 404 Not Found"))
                             if (potential_cmd == b'HEAD'):
                                 client_message = file_data.head(b''+file_path.encode()+potential_filepath, 'idk')
                                 if client_message == None:
-                                    message_queue[x].put((b'HTTP/1.1 404 Not Found\n'
+                                    message_queue[s].put((b'HTTP/1.1 404 Not Found\n'
                                                 +b'Content-Type: text/html\n'
                                                 +b'Content-Length: 50\n'
                                                 +b'Server: cvs9wr\n'
                                                 +b'\n'+b'<html><body><h1>file not found</h1></body> </html>'))
                                 else:
-                                    message_queue[x].put(b'Content-Length: 5\n'+b'Server: cvs9wr\n'+b'Content-Type: text/plain\n\n'+client_message)
-                        if x not in outputs:
-                            outputs.append(x)
+                                    message_queue[s].put(b'Content-Length: 5\n'+b'Server: cvs9wr\n'+b'Content-Type: text/plain\n\n'+client_message)
+                        if s not in outputs:
+                            outputs.append(s)
                     else:
-                        if x in outputs:
-                            outputs.remove(x)
-                        inputs.remove(x)
-                        x.close()
-            for x in writable:
+                        if s in outputs:
+                            outputs.remove(s)
+                        inputs.remove(s)
+                        s.close()
+            for s in writable:
                 try:
-                    next_message = message_queue[x].get_nowait()
+                    next_message = message_queue[s].get_nowait()
                     #print(next_message)
                 except queue.Empty:
-                    outputs.remove(x)
+                    outputs.remove(s)
                 else:
-                    x.send(next_message)
-            for x in exceptional:
-                inputs.remove(x)
-                if x in outputs:
-                    outputs.remove(x)
-                x.close()
+                    val = s.send(next_message)
+                    print("val: "+str(val))
+                    print("nextmsg: "+str(len(next_message)))
+                    check = 0
+                    check = len(next_message)
+                    #while (val <= check):
+                    #    val += s.send(next_message[val:-1])  
+            for s in exceptional:
+                inputs.remove(s)
+                if s in outputs:
+                    outputs.remove(s)
+                s.close()
             #print(data[0:-1])
             
         
