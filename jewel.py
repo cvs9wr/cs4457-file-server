@@ -89,6 +89,7 @@ class Jewel:
                     outputs.remove(x)
                 else:
                     x.send(next_message)
+                    print("message: "+next_message[0:10])
             for x in exceptional:
                 inputs.remove(x)
                 if x in outputs:
