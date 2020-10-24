@@ -70,7 +70,7 @@ class Jewel:
                                     message_queue[s].put((b'HTTP/1.1 404 Not Found\n'
                                                 +b'Content-Type: text/html\n'
                                                 +b'Content-Length: 50\n'
-                                                +b'Server: cvs9wr\n'
+                                                +b'Servers: cvs9wr\n'
                                                 +b'\n'+b'<html><body><h1>file not found</h1></body> </html>'))
                                 else:
                                     message_queue[s].put(b'Content-Length: 5\n'+b'Server: cvs9wr\n'+b'Content-Type: text/plain\n\n'+client_message)
