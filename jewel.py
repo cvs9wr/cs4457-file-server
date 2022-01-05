@@ -26,16 +26,19 @@ class Jewel:
         outputs = [ ]
 
         message_queue = {}
-        #print("[CONN] Connection from "+str(address)+"on port "+str(port))
+        #This waits for input, which will never run out because the list will always have an open server socket
         while inputs:
+            #Break down a given input on the socket into what we are going to read and send back. These are all queues
             readable, writable, exceptional = select.select(inputs, outputs, inputs)
             for s in readable:
                 if s is server:
+                    #Establish a new connection with the client and append it as a potential place to read data from
                     client, address = s.accept()
                     print("[CONN] Connection from "+str(address)+"on port "+str(port))
                     client.setblocking(1)
                     inputs.append(client)
                     message_queue[client] = queue.Queue()
+                #Client is already in our queue of potential messagers, cap all inputs at 1024 and then parse the data for the filepath they requested
                 else:
                     data = s.recv(1024)
                     if data:
@@ -44,18 +47,20 @@ class Jewel:
                         try:
                             potential_cmd = data[0:data.index(b' ')]
                             #print("potentialcmd: "+str(potential_cmd))
+                        #requested a file that the server does not have
                         except:
                             print("[ERRO] ["+str(address)+":"+str(port)+"] "+str(data)+" request returned error 500") 
+                        #Browser used a method that was not GET HEAD OR QUIT
                         if (b'GET' not in data and b'HEAD' not in data and b'QUIT' not in data):
                             print("501 Method Unimplemented") 
+                        #Check that the command was not malformed
                         if (potential_cmd != b''):
                             try:
                                 potential_filepath = data[data.index(b' ')+1:-1]
-                                # print("bebop: "+str(potential_filepath))
                                 potential_filepath = potential_filepath[0:potential_filepath.index(b' ')]
-                                #print("bebop: "+str(potential_filepath))
                             except: 
                                 print("[ERRO] ["+str(address)+":"+str(port)+"] "+str(data)+" request returned error 500 (likely invalid command syntax)")
+                            #Command not malformed, parse as either a GET or HEAD Request
                             if (potential_cmd == b'GET'):
                                 print("[REQU] ["+str(address)+":"+str(port)+"] GET request for "+str(potential_filepath))
                                 #print(file_data.get(b''+potential_filepath, 'idk'))
@@ -81,6 +86,7 @@ class Jewel:
                             outputs.remove(s)
                         inputs.remove(s)
                         s.close()
+            #Handle logic for sending messages back to the user
             for s in writable:
                 try:
                     next_message = message_queue[s].get_nowait()

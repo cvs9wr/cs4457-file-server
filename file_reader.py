@@ -7,6 +7,9 @@ class FileReader:
     def get(self, filepath, cookies):
         '''
         Returns a binary string of the file contents, or None.
+        Python has built in conversion to these things, all we
+        have to do is read the data, turn it into simple html
+        and then send it back to the user.
         '''
         print("filepath: "+str(filepath))
         
